@@ -3,6 +3,7 @@ package list
 // Queue - FIFO queue
 type Queue[T any] struct {
 	head, tail *Node[T]
+	len        int
 }
 
 // NewQueue - create new queue
@@ -19,6 +20,9 @@ func (q *Queue[T]) Tail() *Node[T] {
 }
 
 func (q *Queue[T]) Enqueue(val T) {
+	defer func() {
+		q.len += 1
+	}()
 	if nil == q.head {
 		q.head = &Node[T]{
 			next: nil,
@@ -42,6 +46,7 @@ func (q *Queue[T]) Dequeue() *Node[T] {
 	}
 	el.next = nil
 	el.prev = nil
+	q.len -= 1
 	return el
 }
 
@@ -55,5 +60,10 @@ func (q *Queue[T]) Remove(node *Node[T]) (prev, next *Node[T]) {
 	if q.tail == node {
 		q.tail = node.prev
 	}
+	q.len -= 1
 	return node.Remove()
+}
+
+func (q *Queue[T]) Len() int {
+	return q.len
 }

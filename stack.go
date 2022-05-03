@@ -2,6 +2,7 @@ package list
 
 type Stack[T any] struct {
 	top *Node[T]
+	len int
 }
 
 func NewStack[T any]() *Stack[T] {
@@ -18,6 +19,7 @@ func (s *Stack[T]) Push(val T) {
 		s.top.prev = node
 	}
 	s.top = node
+	s.len += 1
 }
 
 func (s *Stack[T]) Pop() *Node[T] {
@@ -28,6 +30,7 @@ func (s *Stack[T]) Pop() *Node[T] {
 	s.top = r.Next()
 	r.next = nil
 	r.prev = nil
+	s.len -= 1
 	return r
 }
 
@@ -39,5 +42,10 @@ func (s *Stack[T]) Remove(node *Node[T]) (next *Node[T]) {
 		s.top = node.Next()
 	}
 	_, n := node.Remove()
+	s.len -= 1
 	return n
+}
+
+func (s *Stack[T]) Len() int {
+	return s.len
 }
