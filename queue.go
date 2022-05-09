@@ -64,6 +64,14 @@ func (q *Queue[T]) Remove(node *Node[T]) (prev, next *Node[T]) {
 	return node.Remove()
 }
 
+func (q *Queue[T]) MoveToBack(node *Node[T]) {
+	if q.Tail() == node {
+		return
+	}
+	q.Remove(node)
+	q.Enqueue(node)
+}
+
 func (q *Queue[T]) Len() int {
 	return q.len
 }
