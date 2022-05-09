@@ -107,3 +107,48 @@ func (s *queueSuite) TestQueueRemove() {
 	s.Nil(q.Tail())
 	s.Equal(0, q.Len())
 }
+
+func (s *queueSuite) TestMoveToBack() {
+	q := NewQueue[int]()
+	q.Enqueue(1)
+	q.Enqueue(2)
+	q.Enqueue(3)
+	q.Enqueue(4)
+	q.Enqueue(5)
+
+	e := q.Head().Next().Next()
+	s.Equal(3, e.Value())
+
+	q.MoveToBack(e)
+
+	s.Equal(1, q.Head().Value())
+	s.Equal(2, q.Head().Next().Value())
+	s.Equal(4, q.Head().Next().Next().Value())
+	s.Equal(5, q.Head().Next().Next().Next().Value())
+	s.Equal(3, q.Head().Next().Next().Next().Next().Value())
+	s.NotNil(q.Head())
+	s.NotNil(q.Tail())
+	s.Equal(5, q.Len())
+
+	q.MoveToBack(q.Head())
+
+	s.Equal(2, q.Head().Value())
+	s.Equal(4, q.Head().Next().Value())
+	s.Equal(5, q.Head().Next().Next().Value())
+	s.Equal(3, q.Head().Next().Next().Next().Value())
+	s.Equal(1, q.Head().Next().Next().Next().Next().Value())
+	s.NotNil(q.Head())
+	s.NotNil(q.Tail())
+	s.Equal(5, q.Len())
+
+	q.MoveToBack(q.Tail())
+
+	s.Equal(2, q.Head().Value())
+	s.Equal(4, q.Head().Next().Value())
+	s.Equal(5, q.Head().Next().Next().Value())
+	s.Equal(3, q.Head().Next().Next().Next().Value())
+	s.Equal(1, q.Head().Next().Next().Next().Next().Value())
+	s.NotNil(q.Head())
+	s.NotNil(q.Tail())
+	s.Equal(5, q.Len())
+}

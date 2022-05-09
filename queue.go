@@ -65,11 +65,33 @@ func (q *Queue[T]) Remove(node *Node[T]) (prev, next *Node[T]) {
 }
 
 func (q *Queue[T]) MoveToBack(node *Node[T]) {
-	if q.Tail() == node {
+	if nil == q.tail {
+		q.tail = node
 		return
 	}
-	q.Remove(node)
-	q.Enqueue(node)
+
+	if q.tail == node {
+		return
+	}
+
+	if node.prev != nil {
+		node.prev.next = node.next
+	}
+
+	if node.next != nil {
+		node.next.prev = node.prev
+	}
+
+	if q.head == node {
+		q.head = node.next
+	}
+
+	q.tail.next = node
+
+	node.next = nil
+	node.prev = q.tail
+
+	q.tail = node
 }
 
 func (q *Queue[T]) Len() int {
