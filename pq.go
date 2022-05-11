@@ -8,21 +8,25 @@ import (
 var ErrPqIsFull = errors.New("PQ is full")
 
 type PqItem[K constraints.Integer, T any] struct {
-	OrderBy K
-	Value   T
+	orderBy K
+	value   T
 	pos     int
 }
 
-func (p PqItem[K, T]) GetIndex() int {
+func (p *PqItem[K, T]) GetIndex() int {
 	return p.pos
 }
 
-func (p PqItem[K, T]) GetOrderBy() K {
-	return p.OrderBy
+func (p *PqItem[K, T]) GetOrderBy() K {
+	return p.orderBy
 }
 
-func (p PqItem[K, T]) GetValue() T {
-	return p.Value
+func (p *PqItem[K, T]) GetValue() T {
+	return p.value
+}
+
+func (p *PqItem[K, T]) SetValue(value T) {
+	p.value = value
 }
 
 type PQ[K constraints.Integer, T any] struct {
@@ -39,7 +43,7 @@ func NewPQ[K constraints.Integer, T any](maxLength int) *PQ[K, T] {
 }
 
 func (p *PQ[K, T]) less(i, j int) bool {
-	return p.items[i].OrderBy < p.items[j].OrderBy
+	return p.items[i].orderBy < p.items[j].orderBy
 }
 
 func (p *PQ[K, T]) exch(i, j int) {
@@ -71,7 +75,7 @@ func (p *PQ[K, T]) sink(k int) {
 
 func (p *PQ[K, T]) insert(orderBy K, value T) *PqItem[K, T] {
 	p.currentLength += 1
-	item := &PqItem[K, T]{OrderBy: orderBy, Value: value, pos: p.currentLength}
+	item := &PqItem[K, T]{orderBy: orderBy, value: value, pos: p.currentLength}
 	p.items[p.currentLength] = item
 	p.swim(p.currentLength)
 	return item
@@ -118,14 +122,14 @@ func (p *PQ[K, T]) Cap() int {
 }
 
 func (p *PQ[K, T]) IncInPosition(k int) *PqItem[K, T] {
-	p.items[k].OrderBy += 1
+	p.items[k].orderBy += 1
 	res := p.items[k]
 	p.swim(k)
 	return res
 }
 
 func (p *PQ[K, T]) DecInPosition(k int) *PqItem[K, T] {
-	p.items[k].OrderBy -= 1
+	p.items[k].orderBy -= 1
 	res := p.items[k]
 	p.sink(k)
 	return res
